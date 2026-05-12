@@ -1,4 +1,4 @@
-# Paradise Nursery 
+# e-plantShopping
 
 Paradise Nursery is a React shopping app for houseplants built with Vite, React Router, and Redux Toolkit.
 
