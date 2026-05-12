@@ -1,21 +1,47 @@
-import Header from './Header';
-import { useSelector,useDispatch } from 'react-redux';
-import { increase,decrease,remove } from '../redux/CartSlice';
-import { Link } from 'react-router-dom';
-export default function CartItem(){
- const items=Object.values(useSelector(s=>s.cart.items));
- const dispatch=useDispatch();
- const totalQty=items.reduce((t,i)=>t+i.qty,0);
- const total=items.reduce((t,i)=>t+i.qty*i.price,0);
- return <div><Header />
-<h2>Total: R{calculateTotalAmount()}</h2><h3>Total: R{total}</h3>{items.map(i=><div className='card' key={i.id}><img src={i.img}/><h3>{i.name}</h3><p>Unit: R{i.price}</p><p>Subtotal: R{i.qty*i.price}</p><button onClick={()=>dispatch(increase(i.id))}>+</button><span>{i.qty}</span><button onClick={()=>dispatch(decrease(i.id))}>-</button><button onClick={()=>dispatch(remove(i.id))}>Delete</button></div>)}<button onClick={()=>alert('Coming Soon')}>Checkout</button><Link to='/plants'><button>Continue Shopping</button></Link></div>
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { removeItem, updateQuantity } from '../redux/CartSlice';
+
+function CartItem() {
+  const dispatch = useDispatch();
+  const items = useSelector(state => state.cart.items);
 
   const calculateTotalAmount = () => {
-  return items.reduce(
-    (total, item) =>
-      total + item.price * item.quantity,
-    0
+    return items.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
+  const calculateTotalQuantity = () => {
+    return items.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  return (
+    <div>
+      <nav>
+        <a href="#">Home</a> |
+        <a href="#">Plants</a> |
+        <a href="#">Cart ({calculateTotalQuantity()})</a>
+      </nav>
+
+      <h1>Shopping Cart</h1>
+      <h2>Total Plants: {calculateTotalQuantity()}</h2>
+      <h2>Total Cost: R{calculateTotalAmount()}</h2>
+
+      {items.map(item => (
+        <div key={item.id}>
+          <img src={item.image} width="120" />
+          <h3>{item.name}</h3>
+          <p>Unit Price: R{item.price}</p>
+          <p>Total: R{item.price * item.quantity}</p>
+          <button onClick={() => dispatch(updateQuantity({id:item.id, quantity:item.quantity+1}))}>+</button>
+          <span>{item.quantity}</span>
+          <button onClick={() => dispatch(updateQuantity({id:item.id, quantity:item.quantity-1}))}>-</button>
+          <button onClick={() => dispatch(removeItem(item.id))}>Delete</button>
+        </div>
+      ))}
+
+      <button onClick={() => alert('Coming Soon')}>Checkout</button>
+      <button>Continue Shopping</button>
+    </div>
   );
-};
+}
+export default CartItem;
 
